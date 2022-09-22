@@ -183,6 +183,7 @@ private:
     void startSelection( ldomXPointer p );
     bool endSelection( ldomXPointer p );
     bool updateSelection( ldomXPointer p );
+    void updateHistoryAutoSave(int cmd);
 
     DocViewData * _data; // to hide non-qt implementation
     LVDocView * _docview;
@@ -203,6 +204,7 @@ private:
     QString _bookmarkDir;
     bool _editMode;
     int _lastBatteryState;
+    int _pageCounter;
 };
 
 #endif // CR3WIDGET_H

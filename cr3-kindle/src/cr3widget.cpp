@@ -16,6 +16,8 @@
 #include <QFileInfo>
 #include <QDesktopServices>
 
+#define HISTORY_AUTO_SAVE_PAGE_COUNT 25
+
 static int cr_interline_spaces[] = { 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150 };
 
 /// to hide non-qt implementation, place all crengine-related fields here
@@ -292,6 +294,7 @@ CR3View::CR3View( QWidget *parent)
     , _normalCursor(Qt::ArrowCursor), _linkCursor(Qt::PointingHandCursor)
     , _selCursor(Qt::IBeamCursor), _waitCursor(Qt::WaitCursor)
     , _selecting(false), _selected(false), _editMode(false), _lastBatteryState(CR_BATTERY_STATE_NO_BATTERY)
+    , _pageCounter(0)
 {
 #if WORD_SELECTOR_ENABLED==1
     _wordSelector = NULL;
@@ -595,9 +598,31 @@ void CR3View::scrollTo( int value )
     }
 }
 
+void CR3View::updateHistoryAutoSave(int cmd)
+{
+    switch (cmd)
+	{
+        case DCMD_PAGEUP:
+        case DCMD_PAGEDOWN:
+            {
+                _pageCounter += 1;
+                if (_pageCounter >= HISTORY_AUTO_SAVE_PAGE_COUNT)
+                {
+                    _pageCounter = 0;
+                    saveHistory( QString() );
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
+}
+
 void CR3View::doCommand( int cmd, int param )
 {
     _docview->doCommand( (LVDocCmd)cmd, param );
+    updateHistoryAutoSave(cmd);
     update();
 }
 
@@ -785,6 +810,7 @@ bool CR3View::loadHistory( QString fn )
 /// save history to file
 bool CR3View::saveHistory( QString fn )
 {
+    _pageCounter = 0;
     lString16 filename( qt2cr(fn) );
     crtrace log;
     if ( filename.empty() )
