@@ -202,6 +202,7 @@ void MainWindow::goingToScreenSaver()
 {
 #ifndef i386
     if (!usbDriveMode && !screenSaverMode) {
+        ui->view->saveHistory( QString() );
         Device::resumeFramework(true);
 
         if (isCoverScreensaver()) {
