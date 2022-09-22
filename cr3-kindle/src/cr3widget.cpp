@@ -434,6 +434,7 @@ bool CR3View::loadDocument(QString fileName)
         QByteArray utf8 = fileName.toUtf8();
         CRLog::debug( "Trying to restore position for %s", utf8.constData() );
         _docview->restorePosition();
+        saveHistory( QString() );
     } else
         _docview->createDefaultDocument( lString16::empty_str, qt2cr(tr("Error while opening document ") + fileName) );
     update();
